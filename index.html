@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f7f9" />
+    <meta
+      name="description"
+      content="Gerencie produtos, movimentações e alertas de estoque em um só lugar."
+    />
+    <title>Inventário — Visão geral</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <a class="brand" href="#dashboard" aria-label="Inventário — início">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M5 10.5 16 5l11 5.5v11L16 27 5 21.5v-11Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+              <path d="m5.5 10.8 10.5 5.3 10.5-5.3M16 16v10.5M10.5 8l11 5.5" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <span class="brand-copy"><strong>estoque<span>+</span></strong><small>GESTÃO INTELIGENTE</small></span>
+        </a>
+
+        <div class="workspace-label">WORKSPACE</div>
+        <nav class="main-nav" aria-label="Navegação principal">
+          <button class="nav-item active" data-page="dashboard">
+            <span class="nav-icon" data-icon="grid"></span><span>Visão geral</span>
+          </button>
+          <button class="nav-item" data-page="products">
+            <span class="nav-icon" data-icon="box"></span><span>Produtos</span>
+          </button>
+          <button class="nav-item" data-page="movements">
+            <span class="nav-icon" data-icon="arrows"></span><span>Movimentações</span>
+          </button>
+          <button class="nav-item" data-page="categories">
+            <span class="nav-icon" data-icon="tag"></span><span>Categorias</span>
+          </button>
+          <button class="nav-item" data-page="suppliers">
+            <span class="nav-icon" data-icon="truck"></span><span>Fornecedores</span>
+          </button>
+          <button class="nav-item" data-page="locations">
+            <span class="nav-icon" data-icon="pin"></span><span>Locais de estoque</span>
+          </button>
+        </nav>
+
+        <div class="workspace-label secondary-label">ANÁLISE</div>
+        <nav class="main-nav" aria-label="Análise">
+          <button class="nav-item" data-page="alerts">
+            <span class="nav-icon" data-icon="bell"></span><span>Alertas de estoque</span>
+            <span class="nav-badge" id="sidebar-alert-count">0</span>
+          </button>
+          <button class="nav-item" data-page="reports">
+            <span class="nav-icon" data-icon="chart"></span><span>Relatórios</span>
+          </button>
+          <button class="nav-item" data-page="permissions">
+            <span class="nav-icon" data-icon="shield"></span><span>Permissões</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="help-card">
+            <span class="help-icon" data-icon="help"></span>
+            <strong>Precisa de ajuda?</strong>
+            <p>Consulte o guia rápido da plataforma.</p>
+            <button class="help-link" type="button" data-help>Ver guia <span aria-hidden="true">→</span></button>
+          </div>
+          <button class="profile-button" type="button" aria-label="Perfil de Marina Costa">
+            <span class="avatar">MC</span>
+            <span class="profile-copy"><strong>Marina Costa</strong><small>Administradora</small></span>
+            <span class="profile-more" aria-hidden="true">···</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-area">
+        <header class="topbar">
+          <button class="mobile-menu" type="button" aria-label="Abrir menu" id="mobile-menu">
+            <span data-icon="menu"></span>
+          </button>
+          <div class="breadcrumbs"><span>Workspace</span><span class="crumb-separator">/</span><strong id="breadcrumb-current">Visão geral</strong></div>
+          <div class="topbar-actions">
+            <span class="today-label" id="today-label"></span>
+            <button class="icon-button notification-button" type="button" data-page-link="alerts" aria-label="Ver alertas">
+              <span data-icon="bell"></span><i id="notification-dot"></i>
+            </button>
+            <span class="topbar-divider"></span>
+            <button class="top-avatar" type="button" aria-label="Perfil">MC</button>
+          </div>
+        </header>
+        <section class="page-content" id="page-content" aria-live="polite"></section>
+      </main>
+    </div>
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+    <div class="modal-root" id="modal-root"></div>
+  </body>
+</html>
