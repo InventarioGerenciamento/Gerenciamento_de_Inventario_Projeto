@@ -1,444 +1,51 @@
-const ICONS = {
-  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
-  box: '<path d="m12 3 9 4.5v9L12 21l-9-4.5v-9L12 3Z"/><path d="m3.5 7.7 8.5 4.4 8.5-4.4M12 12v9"/>',
-  arrows: '<path d="M7 7h13m0 0-4-4m4 4-4 4"/><path d="M17 17H4m0 0 4 4m-4-4 4-4"/>',
-  tag: '<path d="M20.5 13 13 20.5a2.1 2.1 0 0 1-3 0L3.5 14V4h10l7 7a1.4 1.4 0 0 1 0 2Z"/><circle cx="8" cy="8" r="1.3"/>',
-  truck: '<path d="M3 6h11v11H3z"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="7.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/>',
-  pin: '<path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
-  bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
-  chart: '<path d="M3 3v18h18"/><path d="m7 14 4-4 4 3 6-7"/>',
-  shield: '<path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/>',
-  help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 1 1 4.5 1.8c-1.1 1-2 1.1-2 3"/><path d="M12 17h.01"/>',
-  menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
-  plus: '<path d="M12 5v14M5 12h14"/>',
-  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/>',
-  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
-  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/>',
-  trash: '<path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/>',
-  close: '<path d="m18 6-12 12M6 6l12 12"/>',
-  check: '<path d="m5 12 4 4L19 6"/>',
-  coins: '<circle cx="8" cy="8" r="5"/><path d="M11.5 11.5A5 5 0 1 1 12 17"/><path d="M8 6v4m-2-2h4m5 7v4m-2-2h4"/>',
-  layers: '<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/>',
-  package: '<path d="m12 3 9 4.5v9L12 21l-9-4.5v-9L12 3Z"/><path d="M12 12 3.5 7.7M12 12l8.5-4.3M12 12v9"/>',
-  logout: '<path d="M10 17l5-5-5-5m5 5H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/>',
-};
-
-const PAGE_META = {
-  dashboard: ["Visão geral", "PAINEL DE CONTROLE", "Acompanhe o desempenho do seu estoque em tempo real."],
-  products: ["Produtos", "CATÁLOGO", "Gerencie os produtos cadastrados no seu inventário."],
-  movements: ["Movimentações", "OPERAÇÃO", "Consulte entradas e saídas registradas no estoque."],
-  categories: ["Categorias", "ORGANIZAÇÃO", "Organize seus produtos por categoria."],
-  suppliers: ["Fornecedores", "PARCEIROS", "Mantenha os contatos dos seus fornecedores em dia."],
-  locations: ["Locais de estoque", "ARMAZENAMENTO", "Visualize e organize os locais de armazenamento."],
-  alerts: ["Alertas de estoque", "ATENÇÃO", "Produtos que precisam de reposição ou acompanhamento."],
-  reports: ["Relatórios", "ANÁLISE", "Resumos do inventário para apoiar suas decisões."],
-  permissions: ["Permissões", "ADMINISTRAÇÃO", "Perfis de acesso e permissões da equipe."],
-};
-
-const INITIAL_DATA = {
-  products: [
-    { id: "p-1001", name: "Caderno universitário 10 matérias", sku: "CAD-001", category: "Papelaria", supplier: "Papel & Cia", location: "Prateleira A1", quantity: 148, minimum: 40, price: 18.9 },
-    { id: "p-1002", name: "Caneta esferográfica azul", sku: "CAN-014", category: "Papelaria", supplier: "Papel & Cia", location: "Prateleira A2", quantity: 32, minimum: 50, price: 2.5 },
-    { id: "p-1003", name: "Mouse sem fio ergonômico", sku: "TEC-208", category: "Eletrônicos", supplier: "TechSul", location: "Estoque B1", quantity: 76, minimum: 20, price: 64.9 },
-    { id: "p-1004", name: "Copo térmico inox 450 ml", sku: "UTL-032", category: "Utilidades", supplier: "Casa & Co", location: "Prateleira C3", quantity: 0, minimum: 15, price: 42 },
-    { id: "p-1005", name: "Teclado compacto USB", sku: "TEC-115", category: "Eletrônicos", supplier: "TechSul", location: "Estoque B1", quantity: 53, minimum: 20, price: 89.9 },
-    { id: "p-1006", name: "Bloco adesivo colorido", sku: "CAD-026", category: "Papelaria", supplier: "Papel & Cia", location: "Prateleira A3", quantity: 24, minimum: 30, price: 8.75 },
-    { id: "p-1007", name: "Garrafa de água 750 ml", sku: "UTL-041", category: "Utilidades", supplier: "Casa & Co", location: "Prateleira C2", quantity: 91, minimum: 25, price: 35.5 },
+const initialData={
+  produtos:[
+    {nome:'Notebook Dell Inspiron 15',categoria:'Eletrônicos',fornecedor:'TechSupply Brasil',marca:'Dell',local:'Estoque principal',quantidade:'18',minimo:'5',status:'Disponível'},
+    {nome:'Cadeira ergonômica Pro',categoria:'Mobiliário',fornecedor:'Office Center',marca:'Flexform',local:'Sala de equipamentos',quantidade:'4',minimo:'6',status:'Estoque baixo'},
+    {nome:'Papel sulfite A4 · caixa',categoria:'Escritório',fornecedor:'Papelaria Horizonte',marca:'Chamex',local:'Estoque principal',quantidade:'32',minimo:'10',status:'Disponível'},
+    {nome:'Monitor LED 24 polegadas',categoria:'Eletrônicos',fornecedor:'TechSupply Brasil',marca:'LG',local:'Sala de equipamentos',quantidade:'11',minimo:'4',status:'Disponível'},
+    {nome:'Kit teclado e mouse sem fio',categoria:'Eletrônicos',fornecedor:'TechSupply Brasil',marca:'Logitech',local:'Estoque secundário',quantidade:'3',minimo:'5',status:'Estoque baixo'}
   ],
-  categories: ["Papelaria", "Eletrônicos", "Utilidades", "Acessórios"],
-  suppliers: [
-    { name: "Papel & Cia", contact: "contato@papelecia.com.br", phone: "(11) 3456-7890" },
-    { name: "TechSul", contact: "vendas@techsul.com.br", phone: "(11) 3344-5678" },
-    { name: "Casa & Co", contact: "oi@casaeco.com.br", phone: "(11) 3210-9876" },
-  ],
-  locations: [
-    { name: "Prateleira A1", description: "Papelaria — corredor A" },
-    { name: "Prateleira A2", description: "Papelaria — corredor A" },
-    { name: "Estoque B1", description: "Eletrônicos — depósito B" },
-    { name: "Prateleira C3", description: "Utilidades — corredor C" },
-  ],
-  movements: [],
+  categorias:[{nome:'Eletrônicos',descricao:'Equipamentos e acessórios de tecnologia',produtos:'3',status:'Ativa'},{nome:'Escritório',descricao:'Materiais de uso cotidiano',produtos:'1',status:'Ativa'},{nome:'Mobiliário',descricao:'Móveis para ambientes de trabalho',produtos:'1',status:'Ativa'},{nome:'Limpeza',descricao:'Materiais de limpeza e conservação',produtos:'0',status:'Ativa'}],
+  fornecedores:[{nome:'TechSupply Brasil',contato:'Rafael Costa',email:'vendas@techsupply.com.br',telefone:'(11) 3456-7800',categoria:'Tecnologia',status:'Ativo'},{nome:'Office Center',contato:'Paula Mendes',email:'paula@officecenter.com.br',telefone:'(11) 3988-1200',categoria:'Mobiliário',status:'Ativo'},{nome:'Papelaria Horizonte',contato:'Lucas Ribeiro',email:'contato@horizonte.com.br',telefone:'(21) 2444-9010',categoria:'Papelaria',status:'Ativo'}],
+  locais:[{nome:'Estoque principal',categoria:'Geral',setor:'Prédio A · Térreo',itens:'50',responsavel:'Mariana Alves',status:'Ativo'},{nome:'Estoque secundário',categoria:'Geral',setor:'Prédio B · Sala 12',itens:'18',responsavel:'João Pedro',status:'Ativo'},{nome:'Sala de equipamentos',categoria:'Eletrônicos',setor:'Prédio A · 2º andar',itens:'15',responsavel:'Ana Costa',status:'Ativo'}],
+  usuarios:[{nome:'Mariana Alves',cpf:'•••.•••.•••-42',email:'mariana.alves@empresa.com',cargo:'Administradora',status:'Ativo'},{nome:'João Pedro Santos',cpf:'•••.•••.•••-18',email:'joao.santos@empresa.com',cargo:'Supervisor',status:'Ativo'},{nome:'Ana Costa Lima',cpf:'•••.•••.•••-73',email:'ana.lima@empresa.com',cargo:'Funcionária',status:'Ativo'}]
 };
-
-function loadData() {
-  try {
-    const saved = localStorage.getItem("estoque-mais-data");
-    if (!saved) return structuredClone(INITIAL_DATA);
-    const parsed = JSON.parse(saved);
-    for (const key of Object.keys(INITIAL_DATA)) {
-      if (!Array.isArray(parsed[key])) throw new Error(`Dados inválidos: ${key}`);
-    }
-    return parsed;
-  } catch (error) {
-    console.error("Não foi possível carregar os dados salvos do inventário.", error);
-    return structuredClone(INITIAL_DATA);
-  }
+const meta={
+  produtos:{title:'Produtos',singular:'Produto',icon:'▦',description:'Acompanhe os itens do inventário, os níveis de estoque e onde cada produto está armazenado.',columns:[['nome','Produto','sub'],['categoria','Categoria'],['fornecedor','Fornecedor'],['local','Local'],['quantidade','Em estoque','stock'],['status','Status','status']],fields:[['nome','Nome do produto','text','Ex.: Notebook Dell Inspiron 15',1],['categoria','Categoria','select','',1,'categorias'],['marca','Marca','text','Ex.: Dell',0],['fornecedor','Fornecedor','select','',0,'fornecedores'],['local','Local de armazenamento','select','',0,'locais'],['quantidade','Quantidade em estoque','number','0',1],['minimo','Estoque mínimo','number','0',0]]},
+  categorias:{title:'Categorias',singular:'Categoria',icon:'◫',description:'Organize os produtos por tipo para encontrar o que precisa com facilidade.',columns:[['nome','Categoria','sub'],['descricao','Descrição'],['produtos','Produtos'],['status','Status','status']],fields:[['nome','Nome da categoria','text','Ex.: Eletrônicos',1],['descricao','Descrição','text','Para que serve esta categoria?',0]]},
+  fornecedores:{title:'Fornecedores',singular:'Fornecedor',icon:'♧',description:'Mantenha contatos e informações de quem abastece seu estoque em um só lugar.',columns:[['nome','Fornecedor','sub'],['contato','Pessoa de contato'],['email','E-mail'],['telefone','Telefone'],['categoria','Especialidade'],['status','Status','status']],fields:[['nome','Nome do fornecedor','text','Ex.: TechSupply Brasil',1],['contato','Pessoa de contato','text','Nome de quem atende',1],['email','E-mail','email','contato@empresa.com.br',0],['telefone','Telefone','tel','(11) 99999-0000',0],['categoria','Categoria de fornecimento','text','Ex.: Tecnologia',0]]},
+  locais:{title:'Locais de armazenamento',singular:'Local de armazenamento',icon:'⌖',description:'Saiba onde cada item está guardado e quem é responsável pelo espaço.',columns:[['nome','Local','sub'],['categoria','Tipo de estoque'],['setor','Setor / endereço'],['itens','Itens armazenados'],['responsavel','Responsável'],['status','Status','status']],fields:[['nome','Nome do local','text','Ex.: Estoque principal',1],['categoria','Categoria do estoque','text','Ex.: Geral',0],['setor','Setor ou endereço','text','Ex.: Prédio A · Térreo',0],['responsavel','Pessoa responsável','text','Nome do responsável',0]]},
+  usuarios:{title:'Usuários',singular:'Usuário',icon:'♙',description:'Gerencie quem pode acessar o sistema e acompanhe o perfil de cada pessoa.',columns:[['nome','Usuário','sub'],['email','E-mail'],['cpf','CPF'],['cargo','Cargo'],['status','Status','status']],fields:[['nome','Nome completo','text','Ex.: Mariana Alves',1],['cpf','CPF ou número do crachá','text','000.000.000-00',1],['email','E-mail','email','nome@empresa.com.br',1],['cargo','Cargo ou perfil','select','',1,null,['Funcionário','Supervisor','Gerente','Administradora']]]}
+};
+let data=cloneInitialData();let currentPage='inicio';let toastTimer;
+function cloneInitialData(){return JSON.parse(JSON.stringify(initialData))}
+async function loadData(){try{const response=await fetch('index.php?api=1',{headers:{'Accept':'application/json'}});if(!response.ok)throw new Error('Não foi possível carregar os dados do servidor.');return await response.json()}catch(error){notify('Não foi possível conectar ao PHP. Confira se o servidor está rodando.');return cloneInitialData()}}
+async function persist(){try{const response=await fetch('index.php?api=1',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});if(!response.ok)throw new Error('O servidor não conseguiu salvar os dados.');return true}catch(error){notify(error.message||'Não foi possível salvar no servidor.');return false}}
+const esc=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function notify(message){const box=document.getElementById('toast');box.textContent=message;box.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>box.classList.remove('show'),2600)}
+function setPage(page){currentPage=page;document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===page));document.getElementById('crumb-current').textContent=page==='inicio'?'Visão geral':meta[page].title;document.getElementById('sidebar').classList.remove('open');render()}
+function refreshNavigation(){document.getElementById('nav-products').textContent=data.produtos.length}
+function render(){refreshNavigation();currentPage==='inicio'?renderDashboard():renderTable(currentPage)}
+function renderDashboard(){
+  const totalUnits=data.produtos.reduce((n,p)=>n+(Number(p.quantidade)||0),0),low=data.produtos.filter(p=>Number(p.quantidade)<=Number(p.minimo)).length;
+  const actions=['produtos','categorias','fornecedores','locais'];
+  document.getElementById('content').innerHTML=`<section class="page-head"><div><div class="eyebrow">${new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'numeric',month:'long'}).format(new Date()).toLocaleUpperCase('pt-BR')}</div><h1>Seu inventário, em dia<span style="color:#6074ee">.</span></h1><p>Bem-vinda, Mariana. Aqui está um resumo do que acontece no seu espaço de trabalho.</p></div><button class="button button-primary" id="dashboard-add"><span>＋</span> Novo cadastro</button></section>
+    <section class="metrics" aria-label="Resumo do inventário">${metric('Produtos cadastrados',data.produtos.length,'▦','+2 este mês','')}${metric('Unidades em estoque',totalUnits,'◫','Itens distribuídos nos seus locais','green')}${metric('Categorias ativas',data.categorias.length,'⌘','Organização do catálogo','orange')}${metric('Estoque baixo',low,'↘',low?'Itens precisam de atenção':'Tudo em níveis saudáveis','pink')}</section>
+    <section class="dashboard-grid"><article class="panel"><div class="panel-head"><div><h2>Atividade recente</h2><p>Uma visão rápida das ações no inventário</p></div><button class="text-link" id="activity-link">Ver produtos →</button></div><div class="activity-list">${activity()}</div></article>
+    <article class="panel"><div class="panel-head"><div><h2>Acesso rápido</h2><p>O que você quer organizar hoje?</p></div></div><div class="quick-grid">${actions.map(k=>`<button class="quick-action" data-quick="${k}"><span>${meta[k].icon}</span><strong>${meta[k].title}</strong><small>${data[k].length} cadastrados</small></button>`).join('')}</div></article></section>
+    <section class="report-grid"><article class="report-card"><h3>Produtos por categoria</h3>${categoryBars()}</article><article class="report-card"><h3>Categorias do seu inventário</h3><div class="category-chips">${data.categorias.map(c=>`<span class="category-chip">${esc(c.nome)} <b>${data.produtos.filter(p=>p.categoria===c.nome).length}</b></span>`).join('')||'<span class="category-chip">Nenhuma categoria cadastrada</span>'}</div></article></section>
+    <div class="demo-note"><span>✳</span><p><strong>Explore à vontade.</strong> Cadastre produtos, fornecedores e categorias — seus dados ficam salvos neste navegador.</p></div>`;
+  document.getElementById('dashboard-add').onclick=()=>openPicker();document.getElementById('activity-link').onclick=()=>setPage('produtos');document.querySelectorAll('[data-quick]').forEach(b=>b.onclick=()=>setPage(b.dataset.quick));
 }
-
-let state = loadData();
-let currentPage = "dashboard";
-let productSearch = "";
-let statusFilter = "all";
-let categoryFilter = "all";
-let movementFilter = "all";
-const pageContent = document.querySelector("#page-content");
-const modalRoot = document.querySelector("#modal-root");
-const toastRegion = document.querySelector("#toast-region");
-
-function icon(name) {
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ICONS.box}</svg>`;
-}
-
-document.querySelectorAll("[data-icon]").forEach((element) => {
-  element.innerHTML = icon(element.dataset.icon);
-});
-
-function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (character) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  })[character]);
-}
-
-function saveData() {
-  try {
-    localStorage.setItem("estoque-mais-data", JSON.stringify(state));
-    return true;
-  } catch (error) {
-    console.error("Não foi possível salvar os dados do inventário.", error);
-    toast("Não foi possível salvar os dados neste navegador.", true);
-    return false;
-  }
-}
-
-function currency(value) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
-}
-
-function formatDate(value) {
-  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
-}
-
-function productStatus(product) {
-  if (Number(product.quantity) <= 0) return "out";
-  if (Number(product.quantity) <= Number(product.minimum)) return "low";
-  return "ok";
-}
-
-function toast(message, error = false) {
-  const element = document.createElement("div");
-  element.className = `toast${error ? " error" : ""}`;
-  element.innerHTML = `${icon(error ? "close" : "check")}<span>${escapeHtml(message)}</span>`;
-  toastRegion.append(element);
-  window.setTimeout(() => element.remove(), 3200);
-}
-
-function navigate(page) {
-  if (!PAGE_META[page]) return;
-  currentPage = page;
-  document.querySelector("#sidebar").classList.remove("open");
-  renderPage();
-}
-
-function pageHeading() {
-  const [title, eyebrow, subtitle] = PAGE_META[currentPage];
-  let action = "";
-  if (["dashboard", "products"].includes(currentPage)) action = `<button class="button button-primary" data-action="new-product">${icon("plus")}Novo produto</button>`;
-  else if (currentPage === "movements") action = `<button class="button button-secondary" data-action="stock-out">${icon("logout")}Registrar saída</button><button class="button button-primary" data-action="stock-in">${icon("plus")}Registrar entrada</button>`;
-  else if (["categories", "suppliers", "locations"].includes(currentPage)) action = `<button class="button button-primary" data-action="new-record">${icon("plus")}Adicionar ${currentPage === "categories" ? "categoria" : currentPage === "suppliers" ? "fornecedor" : "local"}</button>`;
-  else if (currentPage === "reports") action = `<button class="button button-secondary" data-action="export">${icon("download")}Exportar dados</button>`;
-  return `<div class="page-heading"><div><p class="eyebrow">${eyebrow}</p><h1>${title}</h1><p class="page-subtitle">${subtitle}</p></div><div class="heading-actions">${action}</div></div>`;
-}
-
-function productRows(products, actions = true) {
-  if (!products.length) return `<tr><td class="empty-state" colspan="${actions ? 7 : 6}">Nenhum produto encontrado com esses filtros.</td></tr>`;
-  return products.map((product, index) => {
-    const status = productStatus(product);
-    const label = status === "ok" ? "Em estoque" : status === "low" ? "Estoque baixo" : "Sem estoque";
-    return `<tr><td><div class="product-cell"><span class="product-thumb tone-${index % 4}">${icon("package")}</span><span><span class="product-name">${escapeHtml(product.name)}</span><span class="product-sku">${escapeHtml(product.sku)}</span></span></div></td><td>${escapeHtml(product.category)}</td><td>${escapeHtml(product.location || "—")}</td><td class="stock-quantity">${Number(product.quantity)} un.</td><td>${currency(Number(product.price) || 0)}</td><td><span class="status status-${status}">${label}</span></td>${actions ? `<td><div class="row-actions"><button class="row-action" data-action="edit-product" data-id="${escapeHtml(product.id)}" aria-label="Editar ${escapeHtml(product.name)}">${icon("edit")}</button><button class="row-action" data-action="delete-product" data-id="${escapeHtml(product.id)}" aria-label="Excluir ${escapeHtml(product.name)}">${icon("trash")}</button></div></td>` : ""}</tr>`;
-  }).join("");
-}
-
-function filteredProducts(products = state.products) {
-  const query = productSearch.trim().toLocaleLowerCase("pt-BR");
-  return products.filter((product) => {
-    const matchesQuery = !query || [product.name, product.sku, product.category, product.supplier, product.location]
-      .some((value) => String(value || "").toLocaleLowerCase("pt-BR").includes(query));
-    return matchesQuery && (statusFilter === "all" || productStatus(product) === statusFilter)
-      && (categoryFilter === "all" || product.category === categoryFilter);
-  });
-}
-
-function productTable(products, dashboard = false, actions = true) {
-  return `<div class="panel table-panel"><div class="table-toolbar"><div class="toolbar-title"><h2>${dashboard ? "Produtos recentes" : "Todos os produtos"}</h2><span class="result-count">${products.length} itens</span></div><div class="toolbar-controls"><label class="search-wrap">${icon("search")}<input type="search" data-search-products aria-label="Buscar produto" placeholder="Buscar produto..." value="${escapeHtml(productSearch)}"></label><select class="filter-select" data-filter-category aria-label="Filtrar por categoria"><option value="all">Categorias</option>${state.categories.map((category) => `<option value="${escapeHtml(category)}" ${categoryFilter === category ? "selected" : ""}>${escapeHtml(category)}</option>`).join("")}</select><select class="filter-select" data-filter-status aria-label="Filtrar por status"><option value="all" ${statusFilter === "all" ? "selected" : ""}>Todos os status</option><option value="ok" ${statusFilter === "ok" ? "selected" : ""}>Em estoque</option><option value="low" ${statusFilter === "low" ? "selected" : ""}>Estoque baixo</option><option value="out" ${statusFilter === "out" ? "selected" : ""}>Sem estoque</option></select>${dashboard ? "" : `<button class="button button-quiet" data-action="export">${icon("download")}Exportar</button>`}</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Produto</th><th>Categoria</th><th>Local</th><th>Quantidade</th><th>Preço unitário</th><th>Status</th>${actions ? "<th>Ações</th>" : ""}</tr></thead><tbody>${productRows(products, actions)}</tbody></table></div>${dashboard ? `<div class="table-footer"><span>Exibindo ${products.length} de ${state.products.length} produtos</span><button class="text-link" data-page-link="products">Ver todos os produtos →</button></div>` : ""}</div>`;
-}
-
-function statsMarkup() {
-  const total = state.products.reduce((sum, product) => sum + Number(product.quantity || 0), 0);
-  const value = state.products.reduce((sum, product) => sum + Number(product.quantity || 0) * Number(product.price || 0), 0);
-  const low = state.products.filter((product) => productStatus(product) === "low").length;
-  const out = state.products.filter((product) => productStatus(product) === "out").length;
-  const cards = [
-    ["Produtos cadastrados", state.products.length, `${state.categories.length} categorias ativas`, "box", ""],
-    ["Unidades em estoque", total.toLocaleString("pt-BR"), "Somatório das quantidades", "layers", "blue"],
-    ["Valor em estoque", currency(value), "Com base no preço unitário", "coins", "purple"],
-    ["Precisam de atenção", low + out, `${low} baixos · ${out} sem estoque`, "bell", "amber"],
-  ];
-  return `<div class="stat-grid">${cards.map(([label, amount, note, symbol, tone]) => `<article class="stat-card"><div class="stat-top"><span class="stat-label">${label}</span><span class="stat-icon ${tone}">${icon(symbol)}</span></div><div class="stat-value">${amount}</div><div class="stat-foot">${note}</div></article>`).join("")}</div>`;
-}
-
-function chartMarkup() {
-  const days = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - index));
-    const key = date.toISOString().slice(0, 10);
-    const amount = (type) => state.movements.filter((movement) => movement.date?.slice(0, 10) === key && movement.type === type).reduce((sum, movement) => sum + Number(movement.quantity), 0);
-    return { label: new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(date).replace(".", ""), entries: amount("in"), exits: amount("out") };
-  });
-  const max = Math.max(1, ...days.flatMap((day) => [day.entries, day.exits]));
-  return `<div class="chart-wrap"><div class="chart"><div class="chart-y"><span>${max}</span><span>${Math.ceil(max * .75)}</span><span>${Math.ceil(max * .5)}</span><span>${Math.ceil(max * .25)}</span><span>0</span></div><div class="chart-plot"><i class="chart-grid"></i><i class="chart-grid"></i><i class="chart-grid"></i><i class="chart-grid"></i><div class="chart-bars">${days.map((day) => `<div class="chart-column" title="${day.entries} entradas, ${day.exits} saídas"><span class="chart-bar in" style="height:${Math.max(3, day.entries / max * 100)}%"></span><span class="chart-bar out" style="height:${Math.max(3, day.exits / max * 100)}%"></span></div>`).join("")}</div><div class="chart-days">${days.map((day) => `<span>${day.label}</span>`).join("")}</div></div></div></div><div class="chart-legend"><span><i class="legend-dot in"></i>Entradas</span><span><i class="legend-dot out"></i>Saídas</span></div>`;
-}
-
-function categoriesChart() {
-  const colors = ["#68ad87", "#7794be", "#d2a65c", "#ae8ab8", "#d48072"];
-  const count = Math.max(1, state.products.length);
-  return `<div class="category-body">${state.categories.slice(0, 5).map((category, index) => {
-    const products = state.products.filter((product) => product.category === category).length;
-    const percent = Math.round(products / count * 100);
-    return `<div class="category-row"><span class="category-color"><i style="background:${colors[index % colors.length]}"></i><span class="category-name">${escapeHtml(category)}</span></span><span class="category-percent">${percent}%</span><span class="category-count">${products}</span><span class="category-track"><span class="category-fill" style="width:${percent}%"></span></span></div>`;
-  }).join("")}</div>`;
-}
-
-function renderDashboard() {
-  pageContent.innerHTML = `${pageHeading()}${statsMarkup()}<div class="overview-grid"><section class="panel"><div class="panel-header"><div><h2 class="panel-title">Movimentação de estoque</h2><p class="panel-description">Entradas e saídas nos últimos 7 dias</p></div><select class="period-select" aria-label="Período do gráfico"><option>Últimos 7 dias</option></select></div>${chartMarkup()}</section><section class="panel"><div class="panel-header"><div><h2 class="panel-title">Produtos por categoria</h2><p class="panel-description">Distribuição do catálogo</p></div><span class="stat-icon">${icon("chart")}</span></div>${categoriesChart()}</section></div>${productTable(filteredProducts().slice(0, 5), true)}`;
-}
-
-function recordTable(key, heading, columns, productField) {
-  const items = state[key];
-  return `<div class="panel table-panel page-panel"><div class="table-toolbar"><div class="toolbar-title"><h2>${heading}</h2><span class="result-count">${items.length} ${key === "categories" ? "categorias" : key === "suppliers" ? "fornecedores" : "locais"}</span></div></div><div class="table-scroll"><table class="data-table"><thead><tr>${columns.map((column) => `<th>${column.label}</th>`).join("")}<th>Produtos</th></tr></thead><tbody>${items.length ? items.map((item) => `<tr>${columns.map((column) => `<td>${escapeHtml(typeof item === "string" ? item : item[column.key] || "—")}</td>`).join("")}<td>${state.products.filter((product) => product[productField] === (item.name || item)).length}</td></tr>`).join("") : `<tr><td class="empty-state" colspan="${columns.length + 1}">Nenhum registro cadastrado.</td></tr>`}</tbody></table></div></div>`;
-}
-
-function movementTable() {
-  const movements = movementFilter === "all" ? state.movements : state.movements.filter((item) => item.type === movementFilter);
-  const sorted = [...movements].sort((a, b) => new Date(b.date) - new Date(a.date));
-  return `<div class="panel table-panel page-panel"><div class="table-toolbar"><div class="toolbar-title"><h2>Histórico de movimentações</h2><span class="result-count">${sorted.length} registros</span></div><div class="toolbar-controls"><select class="filter-select" aria-label="Filtrar tipo de movimentação" data-filter-movement><option value="all" ${movementFilter === "all" ? "selected" : ""}>Todas as movimentações</option><option value="in" ${movementFilter === "in" ? "selected" : ""}>Entradas</option><option value="out" ${movementFilter === "out" ? "selected" : ""}>Saídas</option></select></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Tipo</th><th>Produto</th><th>Quantidade</th><th>Responsável</th><th>Observação</th><th>Data</th></tr></thead><tbody>${sorted.length ? sorted.map((movement) => {
-    const product = state.products.find((item) => item.id === movement.productId);
-    return `<tr><td><span class="movement-type ${movement.type}">${icon(movement.type === "in" ? "plus" : "logout")}${movement.type === "in" ? "Entrada" : "Saída"}</span></td><td>${escapeHtml(product?.name || "Produto removido")}</td><td class="stock-quantity">${movement.type === "in" ? "+" : "−"}${Number(movement.quantity)} un.</td><td>${escapeHtml(movement.responsible || "Não informado")}</td><td>${escapeHtml(movement.note || "—")}</td><td>${formatDate(movement.date)}</td></tr>`;
-  }).join("") : `<tr><td class="empty-state" colspan="6">Nenhuma movimentação registrada. Registre uma entrada ou saída para começar.</td></tr>`}</tbody></table></div></div>`;
-}
-
-function renderPage() {
-  const [title] = PAGE_META[currentPage];
-  document.title = `Inventário — ${title}`;
-  document.querySelector("#breadcrumb-current").textContent = title;
-  document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("active", item.dataset.page === currentPage));
-  const alertCount = state.products.filter((product) => productStatus(product) !== "ok").length;
-  document.querySelector("#sidebar-alert-count").textContent = alertCount;
-  document.querySelector("#sidebar-alert-count").hidden = alertCount === 0;
-  document.querySelector("#notification-dot").hidden = alertCount === 0;
-  if (currentPage === "dashboard") return renderDashboard();
-  if (currentPage === "products") {
-    pageContent.innerHTML = `${pageHeading()}${productTable(filteredProducts())}`;
-    return;
-  }
-  if (currentPage === "movements") {
-    pageContent.innerHTML = `${pageHeading()}${movementTable()}`;
-    return;
-  }
-  if (currentPage === "categories") {
-    pageContent.innerHTML = `${pageHeading()}${recordTable("categories", "Categorias cadastradas", [{ label: "Nome da categoria", key: "name" }], "category")}`;
-    return;
-  }
-  if (currentPage === "suppliers") {
-    pageContent.innerHTML = `${pageHeading()}${recordTable("suppliers", "Fornecedores cadastrados", [{ label: "Fornecedor", key: "name" }, { label: "E-mail", key: "contact" }, { label: "Telefone", key: "phone" }], "supplier")}`;
-    return;
-  }
-  if (currentPage === "locations") {
-    pageContent.innerHTML = `${pageHeading()}${recordTable("locations", "Locais cadastrados", [{ label: "Local", key: "name" }, { label: "Descrição", key: "description" }], "location")}`;
-    return;
-  }
-  if (currentPage === "alerts") {
-    const items = state.products.filter((product) => productStatus(product) !== "ok");
-    pageContent.innerHTML = `${pageHeading()}${statsMarkup()}<div class="panel table-panel page-panel"><div class="table-toolbar"><div class="toolbar-title"><h2>Reposição necessária</h2><span class="result-count">${items.length} produtos</span></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Produto</th><th>Categoria</th><th>Local</th><th>Em estoque</th><th>Estoque mínimo</th><th>Status</th><th>Ação</th></tr></thead><tbody>${items.length ? items.map((product, index) => `<tr><td><div class="product-cell"><span class="product-thumb tone-${index % 4}">${icon("package")}</span><span><span class="product-name">${escapeHtml(product.name)}</span><span class="product-sku">${escapeHtml(product.sku)}</span></span></div></td><td>${escapeHtml(product.category)}</td><td>${escapeHtml(product.location)}</td><td class="stock-quantity">${product.quantity} un.</td><td>${product.minimum} un.</td><td><span class="status status-${productStatus(product)}">${productStatus(product) === "out" ? "Sem estoque" : "Estoque baixo"}</span></td><td><button class="text-link" data-action="stock-in" data-id="${escapeHtml(product.id)}">Registrar entrada</button></td></tr>`).join("") : `<tr><td class="empty-state" colspan="7">Tudo certo — não há produtos abaixo do estoque mínimo.</td></tr>`}</tbody></table></div></div>`;
-    return;
-  }
-  if (currentPage === "reports") {
-    const value = state.products.reduce((sum, product) => sum + Number(product.quantity || 0) * Number(product.price || 0), 0);
-    const units = state.products.reduce((sum, product) => sum + Number(product.quantity || 0), 0);
-    const attention = state.products.filter((product) => productStatus(product) !== "ok").length;
-    pageContent.innerHTML = `${pageHeading()}<div class="report-grid"><article class="panel report-card"><h3>Posição do estoque</h3><p>Valor total e produtos cadastrados no inventário.</p><div class="report-metric">${currency(value)}</div><p>${state.products.length} produtos · ${units.toLocaleString("pt-BR")} unidades</p><button class="button button-secondary" data-action="export">${icon("download")}Baixar relatório CSV</button></article><article class="panel report-card"><h3>Movimentação e reposição</h3><p>Resumo do histórico e dos itens que requerem atenção.</p><div class="report-metric">${state.movements.length}</div><p>movimentações registradas · ${attention} produtos para revisar</p><button class="button button-secondary" data-page-link="movements">${icon("arrows")}Ver movimentações</button></article></div>${productTable(filteredProducts(), false, false)}`;
-    return;
-  }
-  if (currentPage === "permissions") {
-    pageContent.innerHTML = `${pageHeading()}<div class="panel page-panel"><div class="panel-header"><div><h2 class="panel-title">Perfis de acesso</h2><p class="panel-description">As permissões abaixo são uma referência para o controle de acesso da equipe.</p></div><span class="stat-icon">${icon("shield")}</span></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Perfil</th><th>Produtos</th><th>Movimentações</th><th>Relatórios</th><th>Usuários</th></tr></thead><tbody><tr><td><strong>Administrador</strong></td><td>Acesso total</td><td>Acesso total</td><td>Acesso total</td><td>Gerenciar</td></tr><tr><td><strong>Gerente</strong></td><td>Acesso total</td><td>Acesso total</td><td>Visualizar</td><td>Visualizar</td></tr><tr><td><strong>Estoquista</strong></td><td>Visualizar</td><td>Registrar</td><td>Sem acesso</td><td>Sem acesso</td></tr></tbody></table></div><p class="permissions-note">Esta tela é demonstrativa. A aplicação ainda não possui autenticação nem controle de acesso no servidor.</p></div>`;
-    return;
-  }
-  pageContent.innerHTML = `${pageHeading()}<div class="panel empty-state-block"><span class="empty-icon">${icon("box")}</span><strong>Em breve</strong><p>Esta área estará disponível nas próximas atualizações.</p></div>`;
-}
-
-function modalMarkup(title, subtitle, body) {
-  return `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-header"><div><h2 id="modal-title">${title}</h2><p>${subtitle}</p></div><button class="modal-close" data-action="close-modal" aria-label="Fechar">${icon("close")}</button></div>${body}</div>`;
-}
-
-function openModal(markup) {
-  modalRoot.innerHTML = markup;
-  modalRoot.addEventListener("click", (event) => {
-    if (event.target === modalRoot) closeModal();
-  }, { once: true });
-  modalRoot.querySelector("input, select, textarea")?.focus();
-}
-
-function closeModal() {
-  modalRoot.innerHTML = "";
-}
-
-function selectOptions(values, selected = "") {
-  return values.map((value) => `<option value="${escapeHtml(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(value)}</option>`).join("");
-}
-
-function openProductModal(product = null) {
-  const editing = Boolean(product);
-  const body = `<form class="modal-form" id="product-form"><div class="form-grid">
-    <div class="field full"><label for="product-name">Nome do produto *</label><input id="product-name" name="name" required maxlength="100" value="${escapeHtml(product?.name || "")}" placeholder="Ex.: Caderno universitário"></div>
-    <div class="field"><label for="product-sku">Código SKU *</label><input id="product-sku" name="sku" required maxlength="32" value="${escapeHtml(product?.sku || "")}" placeholder="Ex.: CAD-001"></div>
-    <div class="field"><label for="product-category">Categoria *</label><select id="product-category" name="category" required><option value="">Selecione uma categoria</option>${selectOptions(state.categories, product?.category || "")}</select></div>
-    <div class="field"><label for="product-supplier">Fornecedor</label><select id="product-supplier" name="supplier"><option value="">Selecione</option>${selectOptions(state.suppliers.map((item) => item.name), product?.supplier || "")}</select></div>
-    <div class="field"><label for="product-location">Local de armazenamento</label><select id="product-location" name="location"><option value="">Selecione</option>${selectOptions(state.locations.map((item) => item.name), product?.location || "")}</select></div>
-    <div class="field"><label for="product-quantity">Quantidade atual *</label><input id="product-quantity" name="quantity" type="number" min="0" step="1" required value="${escapeHtml(product?.quantity ?? 0)}"></div>
-    <div class="field"><label for="product-minimum">Estoque mínimo *</label><input id="product-minimum" name="minimum" type="number" min="0" step="1" required value="${escapeHtml(product?.minimum ?? 1)}"></div>
-    <div class="field full"><label for="product-price">Preço unitário (R$) *</label><input id="product-price" name="price" type="number" min="0" step="0.01" required value="${escapeHtml(product?.price ?? "")}" placeholder="0,00"></div>
-  </div><div class="modal-footer"><button class="button button-secondary" type="button" data-action="close-modal">Cancelar</button><button class="button button-primary" type="submit">${icon("check")}${editing ? "Salvar alterações" : "Cadastrar produto"}</button></div></form>`;
-  openModal(modalMarkup(editing ? "Editar produto" : "Novo produto", editing ? "Atualize as informações do produto." : "Preencha os dados para cadastrar um novo item.", body));
-  modalRoot.querySelector("#product-form").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const sku = String(form.get("sku")).trim();
-    if (state.products.some((item) => item.sku.toLocaleLowerCase("pt-BR") === sku.toLocaleLowerCase("pt-BR") && item.id !== product?.id)) {
-      toast("Já existe um produto cadastrado com este SKU.", true);
-      modalRoot.querySelector("#product-sku").focus();
-      return;
-    }
-    const updated = { id: product?.id || `p-${Date.now()}`, name: String(form.get("name")).trim(), sku, category: String(form.get("category")), supplier: String(form.get("supplier")), location: String(form.get("location")), quantity: Number(form.get("quantity")), minimum: Number(form.get("minimum")), price: Number(form.get("price")) };
-    if (editing) state.products = state.products.map((item) => item.id === product.id ? updated : item);
-    else state.products.unshift(updated);
-    saveData();
-    closeModal();
-    renderPage();
-    toast(editing ? "Produto atualizado com sucesso." : "Produto cadastrado com sucesso.");
-  });
-}
-
-function openMovementModal(type, productId = "") {
-  const entry = type === "in";
-  const body = `<form class="modal-form" id="movement-form"><div class="form-grid">
-    <div class="field full"><label for="movement-product">Produto *</label><select id="movement-product" name="productId" required><option value="">Selecione o produto</option>${state.products.map((product) => `<option value="${escapeHtml(product.id)}" ${product.id === productId ? "selected" : ""}>${escapeHtml(product.name)} · ${escapeHtml(product.sku)} (${product.quantity} un.)</option>`).join("")}</select></div>
-    <div class="field"><label for="movement-quantity">Quantidade *</label><input id="movement-quantity" name="quantity" type="number" min="1" step="1" required placeholder="Ex.: 10"></div>
-    <div class="field"><label for="movement-responsible">Responsável</label><input id="movement-responsible" name="responsible" maxlength="60" value="Marina Costa"></div>
-    <div class="field full"><label for="movement-note">Observação</label><textarea id="movement-note" name="note" maxlength="180" placeholder="${entry ? "Ex.: Reposição do fornecedor" : "Ex.: Separação de pedido"}"></textarea></div>
-  </div><div class="modal-footer"><button class="button button-secondary" type="button" data-action="close-modal">Cancelar</button><button class="button button-primary" type="submit">${icon(entry ? "plus" : "logout")}Registrar ${entry ? "entrada" : "saída"}</button></div></form>`;
-  openModal(modalMarkup(`Registrar ${entry ? "entrada" : "saída"}`, `Atualize o saldo do estoque com uma nova ${entry ? "entrada" : "saída"}.`, body));
-  modalRoot.querySelector("#movement-form").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const product = state.products.find((item) => item.id === form.get("productId"));
-    const quantity = Number(form.get("quantity"));
-    if (!product) return toast("Selecione um produto válido.", true);
-    if (!Number.isInteger(quantity) || quantity < 1) return toast("Informe uma quantidade inteira maior que zero.", true);
-    if (!entry && quantity > Number(product.quantity)) return toast("A saída não pode ser maior que o estoque disponível.", true);
-    product.quantity = Number(product.quantity) + (entry ? quantity : -quantity);
-    state.movements.push({ id: `m-${Date.now()}`, productId: product.id, type, quantity, responsible: String(form.get("responsible")).trim() || "Não informado", note: String(form.get("note")).trim(), date: new Date().toISOString() });
-    saveData();
-    closeModal();
-    renderPage();
-    toast(`${entry ? "Entrada" : "Saída"} de ${quantity} un. registrada.`);
-  });
-}
-
-function openRecordModal() {
-  const config = {
-    categories: { title: "Nova categoria", fields: [{ name: "name", label: "Nome da categoria *", placeholder: "Ex.: Papelaria", required: true }] },
-    suppliers: { title: "Novo fornecedor", fields: [{ name: "name", label: "Nome do fornecedor *", placeholder: "Ex.: Distribuidora Central", required: true }, { name: "contact", label: "E-mail", type: "email", placeholder: "contato@fornecedor.com.br" }, { name: "phone", label: "Telefone", placeholder: "(11) 3333-4444" }] },
-    locations: { title: "Novo local", fields: [{ name: "name", label: "Nome do local *", placeholder: "Ex.: Prateleira D1", required: true }, { name: "description", label: "Descrição", placeholder: "Ex.: Depósito — corredor D" }] },
-  }[currentPage];
-  if (!config) return;
-  const body = `<form class="modal-form" id="record-form"><div class="form-grid">${config.fields.map((field) => `<div class="field full"><label for="record-${field.name}">${field.label}</label><input id="record-${field.name}" name="${field.name}" ${field.type ? `type="${field.type}"` : ""} ${field.required ? "required" : ""} maxlength="100" placeholder="${field.placeholder}"></div>`).join("")}</div><div class="modal-footer"><button class="button button-secondary" type="button" data-action="close-modal">Cancelar</button><button class="button button-primary" type="submit">${icon("check")}Salvar</button></div></form>`;
-  openModal(modalMarkup(config.title, "Preencha as informações do novo cadastro.", body));
-  modalRoot.querySelector("#record-form").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const values = Object.fromEntries(new FormData(event.currentTarget).entries());
-    const name = values.name.trim();
-    if (currentPage === "categories") {
-      if (state.categories.some((item) => item.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR"))) return toast("Esta categoria já existe.", true);
-      state.categories.push(name);
-    } else if (currentPage === "suppliers") {
-      if (state.suppliers.some((item) => item.name.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR"))) return toast("Este fornecedor já existe.", true);
-      state.suppliers.push({ name, contact: values.contact.trim(), phone: values.phone.trim() });
-    } else {
-      if (state.locations.some((item) => item.name.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR"))) return toast("Este local já existe.", true);
-      state.locations.push({ name, description: values.description.trim() });
-    }
-    saveData();
-    closeModal();
-    renderPage();
-    toast("Cadastro realizado com sucesso.");
-  });
-}
-
-function exportProducts() {
-  const rows = [["Produto", "SKU", "Categoria", "Fornecedor", "Local", "Quantidade", "Estoque mínimo", "Preço unitário (R$)", "Status"], ...state.products.map((product) => [product.name, product.sku, product.category, product.supplier, product.location, product.quantity, product.minimum, Number(product.price).toFixed(2), productStatus(product) === "ok" ? "Em estoque" : productStatus(product) === "low" ? "Estoque baixo" : "Sem estoque"])];
-  const csv = rows.map((row) => row.map((value) => `"${String(value ?? "").replaceAll('"', '""')}"`).join(";")).join("\r\n");
-  const url = URL.createObjectURL(new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" }));
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `inventario-${new Date().toISOString().slice(0, 10)}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
-  toast("Relatório CSV exportado.");
-}
-
-document.addEventListener("click", (event) => {
-  const nav = event.target.closest("[data-page], [data-page-link]");
-  if (nav) return navigate(nav.dataset.page || nav.dataset.pageLink);
-  const button = event.target.closest("[data-action]");
-  if (!button) return;
-  const product = state.products.find((item) => item.id === button.dataset.id);
-  switch (button.dataset.action) {
-    case "new-product": openProductModal(); break;
-    case "edit-product": if (product) openProductModal(product); break;
-    case "delete-product":
-      if (product && window.confirm(`Excluir "${product.name}" do inventário?`)) {
-        state.products = state.products.filter((item) => item.id !== product.id);
-        saveData(); renderPage(); toast("Produto excluído.");
-      }
-      break;
-    case "stock-in": openMovementModal("in", button.dataset.id || ""); break;
-    case "stock-out": openMovementModal("out", button.dataset.id || ""); break;
-    case "new-record": openRecordModal(); break;
-    case "export": exportProducts(); break;
-    case "close-modal": closeModal(); break;
-  }
-});
-
-document.addEventListener("input", (event) => {
-  if (!event.target.matches("[data-search-products]")) return;
-  productSearch = event.target.value;
-  const cursor = event.target.selectionStart;
-  renderPage();
-  const input = pageContent.querySelector("[data-search-products]");
-  input?.focus();
-  input?.setSelectionRange(cursor, cursor);
-});
-
-document.addEventListener("change", (event) => {
-  if (event.target.matches("[data-filter-category]")) categoryFilter = event.target.value;
-  if (event.target.matches("[data-filter-status]")) statusFilter = event.target.value;
-  if (event.target.matches("[data-filter-category], [data-filter-status]")) renderPage();
-  if (event.target.matches("[data-filter-movement]")) {
-    movementFilter = event.target.value;
-    renderPage();
-  }
-});
-
-document.querySelector("#mobile-menu").addEventListener("click", () => document.querySelector("#sidebar").classList.toggle("open"));
-document.querySelector("[data-help]").addEventListener("click", () => openModal(modalMarkup("Guia rápido", "Comece a organizar seu inventário em poucos passos.", `<div class="permissions-note"><strong>1. Cadastre seus produtos:</strong> inclua nome, SKU, categoria e quantidade atual.<br><br><strong>2. Registre movimentações:</strong> use entradas e saídas para manter o saldo atualizado.<br><br><strong>3. Acompanhe os alertas:</strong> produtos abaixo do estoque mínimo aparecem na área de alertas.<br><br><strong>4. Exporte relatórios:</strong> baixe a lista de produtos em CSV para usar em uma planilha.</div>`)));
-document.querySelector("#today-label").textContent = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "numeric", month: "short", year: "numeric" }).format(new Date());
-renderPage();
+function metric(label,value,icon,note,color){return `<article class="metric"><div class="metric-top">${label}<span class="metric-icon ${color}">${icon}</span></div><div class="metric-value">${value}</div><div class="metric-note">${note}</div></article>`}
+function activity(){const records=data.produtos.slice(0,3);if(!records.length)return'<p class="empty-activity">Seus registros recentes aparecerão aqui quando você adicionar produtos.</p>';return records.map((p,i)=>`<div class="activity-item"><span class="activity-symbol">${i===0?'＋':'▦'}</span><div class="activity-copy"><strong>${i===0?'Produto disponível no inventário':'Item cadastrado'} · ${esc(p.nome)}</strong><span>${esc(p.categoria)}${p.local?' · '+esc(p.local):''}</span></div><span class="activity-time">${i===0?'Agora':'Demonstração'}</span></div>`).join('')}
+function categoryBars(){if(!data.categorias.length)return'<span class="category-chip">Adicione uma categoria para começar.</span>';return data.categorias.slice(0,5).map(c=>{const n=data.produtos.filter(p=>p.categoria===c.nome).length;const max=Math.max(...data.categorias.map(x=>data.produtos.filter(p=>p.categoria===x.nome).length),1);return`<div class="stock-row"><span class="stock-label">${esc(c.nome)}</span><div class="stock-track"><div class="stock-fill" style="width:${Math.max(n/max*100,n?9:0)}%"></div></div><span class="stock-number">${n}</span></div>`}).join('')}
+function renderTable(key){const m=meta[key],rows=data[key];document.getElementById('content').innerHTML=`<section class="page-head"><div><div class="eyebrow">SEU ESPAÇO DE TRABALHO</div><h1>${m.title}</h1><p>${m.description}</p></div><button class="button button-primary" id="add-record"><span>＋</span> Cadastrar ${m.singular.toLowerCase()}</button></section><section class="table-panel"><div class="table-toolbar"><span class="table-count"><strong>${rows.length}</strong> ${rows.length===1?'registro':'registros'} no total</span><label class="search-box"><span>⌕</span><input id="table-search" type="search" placeholder="Buscar ${m.singular.toLowerCase()}..." aria-label="Buscar ${m.singular.toLowerCase()}"></label></div><div class="table-scroll"><table><thead><tr>${m.columns.map(c=>`<th>${c[1]}</th>`).join('')}<th style="text-align:right">AÇÕES</th></tr></thead><tbody id="table-body">${tableRows(key,rows)}</tbody></table></div></section>${key==='produtos'?`<section class="report-grid"><article class="report-card"><h3>Níveis de estoque</h3>${inventoryBars()}</article><article class="report-card"><h3>Dica para sua organização</h3><p style="font-size:10px;color:#8290a4;line-height:1.8;margin:0">Acompanhe a coluna <strong>Em estoque</strong>. Quando a quantidade chega ao limite mínimo, o item é sinalizado para ajudar você a planejar a reposição.</p></article></section>`:''}<div class="demo-note"><span>✳</span><p><strong>Dica:</strong> cadastros feitos durante a demonstração ficam salvos neste navegador.</p></div>`;document.getElementById('add-record').onclick=()=>openForm(key);document.getElementById('table-search').oninput=e=>{const q=e.target.value.toLowerCase();document.getElementById('table-body').innerHTML=tableRows(key,data[key].filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(q))))}}
+function tableRows(key,rows){const m=meta[key];if(!rows.length)return`<tr><td colspan="${m.columns.length+1}"><div class="table-empty"><strong>Nenhum registro encontrado</strong>Tente outra busca ou cadastre o primeiro ${m.singular.toLowerCase()}.</div></td></tr>`;return rows.map(r=>{const i=data[key].indexOf(r);return`<tr>${m.columns.map(([field,,type])=>{let v=esc(r[field]||'—');if(type==='sub')return`<td><span class="record-avatar">${esc((r[field]||'?').trim().charAt(0).toUpperCase())}</span><span class="cell-main">${v}</span>${key==='produtos'?`<div class="cell-sub" style="margin-left:34px">${esc(r.marca||'')}</div>`:key==='categorias'?`<div class="cell-sub" style="margin-left:34px">${esc(r.descricao||'')}</div>`:''}</td>`;if(type==='status')return`<td><span class="pill ${/inativ/i.test(r[field]||'')?'inactive':''}">${v}</span></td>`;if(type==='stock'){const low=Number(r.quantidade)<=Number(r.minimo);return`<td><span class="pill ${low?'low':''}">${v} ${low?'· baixo':'un.'}</span></td>`}return`<td>${v}</td>`}).join('')}<td><div class="row-actions"><button class="row-action" data-edit="${i}" data-key="${key}">Editar</button><button class="row-action" data-delete="${i}" data-key="${key}" aria-label="Excluir ${m.singular}">Excluir</button></div></td></tr>`}).join('')}
+function inventoryBars(){const levels=[['Disponíveis',data.produtos.filter(p=>Number(p.quantidade)>Number(p.minimo)).length],['Precisam de reposição',data.produtos.filter(p=>Number(p.quantidade)<=Number(p.minimo)).length]];const total=Math.max(data.produtos.length,1);return levels.map(([name,n])=>`<div class="stock-row"><span class="stock-label">${name}</span><div class="stock-track"><div class="stock-fill" style="width:${Math.max(n/total*100,n?8:0)}%;background:${name.startsWith('Precisam')?'#e9a552':'#7482ee'}"></div></div><span class="stock-number">${n}</span></div>`).join('')}
+function openPicker(){const opts=['produtos','categorias','fornecedores','locais','usuarios'];document.getElementById('dialog-title').textContent='O que deseja cadastrar?';document.getElementById('dialog-description').textContent='Escolha uma seção para abrir o formulário de cadastro.';document.getElementById('submit-label').textContent='';document.querySelector('.dialog-actions').style.display='none';document.getElementById('form-fields').innerHTML=opts.map(k=>`<button type="button" class="quick-action" data-pick="${k}"><span>${meta[k].icon}</span><strong>${meta[k].singular}</strong><small>${meta[k].description.split('.')[0]}.</small></button>`).join('');document.getElementById('form-fields').style.gridTemplateColumns='1fr 1fr';const dialog=document.getElementById('record-dialog');dialog.showModal();document.getElementById('form-fields').querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const key=b.dataset.pick;dialog.close();document.querySelector('.dialog-actions').style.display='flex';document.getElementById('form-fields').style.gridTemplateColumns='';openForm(key)})}
+function optionsFor(field){if(field==='categorias')return data.categorias.map(r=>r.nome);if(field==='fornecedores')return data.fornecedores.map(r=>r.nome);if(field==='locais')return data.locais.map(r=>r.nome);return[]}
+function openForm(key,index=null){document.querySelector('.dialog-actions').style.display='flex';document.getElementById('form-fields').style.gridTemplateColumns='';const m=meta[key],editing=index!==null,record=editing?data[key][index]:{};const fields=document.getElementById('form-fields');document.getElementById('dialog-title').textContent=(editing?'Editar ':'Cadastrar ')+m.singular.toLowerCase();document.getElementById('dialog-description').textContent=editing?'Atualize as informações e salve as alterações.':'Preencha os dados abaixo para adicionar ao seu inventário.';document.getElementById('submit-label').textContent=editing?'Salvar alterações':'Salvar cadastro';fields.innerHTML=m.fields.map(([name,label,type='text',placeholder='',required=false,source=null,choices=null],i)=>{const full=type==='email'||type==='tel'||(key==='produtos'&&i===0);let input;if(type==='select'){const list=choices||optionsFor(source);input=`<select name="${name}" ${required?'required':''}><option value="">Selecione...</option>${list.map(o=>`<option ${record[name]===o?'selected':''} value="${esc(o)}">${esc(o)}</option>`).join('')}</select>`}else input=`<input name="${name}" type="${type}" ${type==='number'?'min="0"':''} value="${esc(record[name]||'')}" placeholder="${esc(placeholder)}" ${required?'required':''}>`;return`<div class="form-field ${full?'full':''}"><label for="field-${name}">${label}${required?' *':''}</label>${input.replace('<input ','<input id="field-'+name+'" ').replace('<select ','<select id="field-'+name+'" ')}</div>`}).join('');const dialog=document.getElementById('record-dialog');dialog.showModal();document.getElementById('record-form').onsubmit=async e=>{e.preventDefault();const obj=Object.fromEntries(new FormData(e.currentTarget).entries());if(key==='produtos'){obj.quantidade=obj.quantidade||'0';obj.minimo=obj.minimo||'0';obj.status=Number(obj.quantidade)<=Number(obj.minimo)?'Estoque baixo':'Disponível'}else if(!obj.status)obj.status=key==='usuarios'?'Ativo':key==='categorias'?'Ativa':'Ativo';const previous=JSON.parse(JSON.stringify(data));if(editing)data[key][index]={...data[key][index],...obj};else data[key].unshift(obj);const saved=await persist();if(!saved){data=previous;return}dialog.close();render();notify(`${m.singular} ${editing?'atualizado':'cadastrado'} com sucesso.`)} }
+function bind(){document.querySelectorAll('.nav-item').forEach(b=>b.onclick=()=>setPage(b.dataset.page));document.getElementById('mobile-menu').onclick=()=>document.getElementById('sidebar').classList.toggle('open');document.getElementById('dialog-close').onclick=()=>document.getElementById('record-dialog').close();document.getElementById('cancel-button').onclick=()=>document.getElementById('record-dialog').close();document.getElementById('help-btn').onclick=()=>notify('Escolha uma seção no menu e use “Cadastrar” para começar.');document.querySelector('.notification').onclick=()=>notify('Você está por dentro. Nenhuma notificação nova.');document.querySelector('.profile-menu').onclick=()=>notify('Perfil: Administradora · Mariana Alves.');document.getElementById('record-dialog').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close()});document.getElementById('content').addEventListener('click',async e=>{const del=e.target.closest('[data-delete]'),edit=e.target.closest('[data-edit]');if(del){const key=del.dataset.key,index=Number(del.dataset.delete),record=data[key][index];if(confirm(`Excluir “${record.nome}”?`)){const previous=JSON.parse(JSON.stringify(data));data[key].splice(index,1);if(await persist()){render();notify('Registro excluído.')}else data=previous}}if(edit){openForm(edit.dataset.key,Number(edit.dataset.edit))}})}
+document.getElementById('today').textContent=new Intl.DateTimeFormat('pt-BR',{weekday:'short',day:'numeric',month:'short'}).format(new Date()).replace('.','');bind();loadData().then(loaded=>{data=loaded;render()});

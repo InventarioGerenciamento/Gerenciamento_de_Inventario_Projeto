@@ -1,100 +1,38 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f6f7f9" />
-    <meta
-      name="description"
-      content="Gerencie produtos, movimentações e alertas de estoque em um só lugar."
-    />
-    <title>Inventário — Visão geral</title>
-    <link rel="stylesheet" href="./styles.css" />
-    <script src="./app.js" defer></script>
-  </head>
-  <body>
-    <div class="app-shell">
-      <aside class="sidebar" id="sidebar">
-        <a class="brand" href="#dashboard" aria-label="Inventário — início">
-          <span class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 32 32" fill="none">
-              <path d="M5 10.5 16 5l11 5.5v11L16 27 5 21.5v-11Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
-              <path d="m5.5 10.8 10.5 5.3 10.5-5.3M16 16v10.5M10.5 8l11 5.5" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
-            </svg>
-          </span>
-          <span class="brand-copy"><strong>estoque<span>+</span></strong><small>GESTÃO INTELIGENTE</small></span>
-        </a>
-
-        <div class="workspace-label">WORKSPACE</div>
-        <nav class="main-nav" aria-label="Navegação principal">
-          <button class="nav-item active" data-page="dashboard">
-            <span class="nav-icon" data-icon="grid"></span><span>Visão geral</span>
-          </button>
-          <button class="nav-item" data-page="products">
-            <span class="nav-icon" data-icon="box"></span><span>Produtos</span>
-          </button>
-          <button class="nav-item" data-page="movements">
-            <span class="nav-icon" data-icon="arrows"></span><span>Movimentações</span>
-          </button>
-          <button class="nav-item" data-page="categories">
-            <span class="nav-icon" data-icon="tag"></span><span>Categorias</span>
-          </button>
-          <button class="nav-item" data-page="suppliers">
-            <span class="nav-icon" data-icon="truck"></span><span>Fornecedores</span>
-          </button>
-          <button class="nav-item" data-page="locations">
-            <span class="nav-icon" data-icon="pin"></span><span>Locais de estoque</span>
-          </button>
-        </nav>
-
-        <div class="workspace-label secondary-label">ANÁLISE</div>
-        <nav class="main-nav" aria-label="Análise">
-          <button class="nav-item" data-page="alerts">
-            <span class="nav-icon" data-icon="bell"></span><span>Alertas de estoque</span>
-            <span class="nav-badge" id="sidebar-alert-count">0</span>
-          </button>
-          <button class="nav-item" data-page="reports">
-            <span class="nav-icon" data-icon="chart"></span><span>Relatórios</span>
-          </button>
-          <button class="nav-item" data-page="permissions">
-            <span class="nav-icon" data-icon="shield"></span><span>Permissões</span>
-          </button>
-        </nav>
-
-        <div class="sidebar-bottom">
-          <div class="help-card">
-            <span class="help-icon" data-icon="help"></span>
-            <strong>Precisa de ajuda?</strong>
-            <p>Consulte o guia rápido da plataforma.</p>
-            <button class="help-link" type="button" data-help>Ver guia <span aria-hidden="true">→</span></button>
-          </div>
-          <button class="profile-button" type="button" aria-label="Perfil de Marina Costa">
-            <span class="avatar">MC</span>
-            <span class="profile-copy"><strong>Marina Costa</strong><small>Administradora</small></span>
-            <span class="profile-more" aria-hidden="true">···</span>
-          </button>
-        </div>
-      </aside>
-
-      <main class="main-area">
-        <header class="topbar">
-          <button class="mobile-menu" type="button" aria-label="Abrir menu" id="mobile-menu">
-            <span data-icon="menu"></span>
-          </button>
-          <div class="breadcrumbs"><span>Workspace</span><span class="crumb-separator">/</span><strong id="breadcrumb-current">Visão geral</strong></div>
-          <div class="topbar-actions">
-            <span class="today-label" id="today-label"></span>
-            <button class="icon-button notification-button" type="button" data-page-link="alerts" aria-label="Ver alertas">
-              <span data-icon="bell"></span><i id="notification-dot"></i>
-            </button>
-            <span class="topbar-divider"></span>
-            <button class="top-avatar" type="button" aria-label="Perfil">MC</button>
-          </div>
-        </header>
-        <section class="page-content" id="page-content" aria-live="polite"></section>
-      </main>
-    </div>
-    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
-    <div class="modal-root" id="modal-root"></div>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8fc">
+  <title>Senai estoque · Gestão de inventário</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#inicio" aria-label="Senai estoque início"><span class="brand-mark">S</span><span>Senai estoque<span class="brand-dot">.</span><small>GESTÃO DE INVENTÁRIO</small></span></a>
+    <div class="workspace-label">ESPAÇO DE TRABALHO</div>
+    <nav class="navigation" aria-label="Navegação principal">
+      <button class="nav-item active" data-page="inicio"><span class="nav-icon">⌂</span>Visão geral</button>
+      <div class="nav-group-label">GERENCIAMENTO</div>
+      <button class="nav-item" data-page="produtos"><span class="nav-icon">▦</span>Produtos <span class="nav-count" id="nav-products">0</span></button>
+      <button class="nav-item" data-page="categorias"><span class="nav-icon">◫</span>Categorias</button>
+      <button class="nav-item" data-page="fornecedores"><span class="nav-icon">♧</span>Fornecedores</button>
+      <button class="nav-item" data-page="locais"><span class="nav-icon">⌖</span>Locais de armazenamento</button>
+      <div class="nav-group-label">ADMINISTRAÇÃO</div>
+      <button class="nav-item" data-page="usuarios"><span class="nav-icon">♙</span>Usuários</button>
+    </nav>
+    <div class="sidebar-bottom"><div class="help-card"><span class="help-symbol">✳</span><strong>Precisa de ajuda?</strong><p>Consulte os guias de uso do inventário.</p><button id="help-btn">Ver guia <span>↗</span></button></div><div class="profile"><div class="avatar">MA</div><div class="profile-info"><strong>Mariana Alves</strong><small>Administradora</small></div><button class="profile-menu" aria-label="Opções do perfil">···</button></div></div>
+  </aside>
+  <main class="main-area">
+    <header class="topbar"><button class="mobile-menu" id="mobile-menu" aria-label="Abrir menu">☰</button><div class="breadcrumb"><span>Workspace</span><span class="crumb-sep">/</span><strong id="crumb-current">Visão geral</strong></div><div class="top-actions"><span class="today" id="today"></span><button class="icon-button notification" aria-label="Notificações">♧<i></i></button><div class="top-avatar">MA</div></div></header>
+    <div class="content" id="content"></div>
+    <footer class="footer"><span>Senai estoque <span class="footer-dot">•</span> Gestão simples, estoque organizado.</span><span>DEMONSTRAÇÃO INTERATIVA <span class="live-dot"></span></span></footer>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog id="record-dialog"><form id="record-form" method="dialog"><div class="dialog-top"><div><div class="eyebrow">NOVO REGISTRO</div><h2 id="dialog-title">Adicionar item</h2></div><button class="dialog-close" type="button" id="dialog-close" aria-label="Fechar">×</button></div><p class="dialog-description" id="dialog-description">Preencha os dados abaixo para continuar.</p><div class="form-fields" id="form-fields"></div><div class="dialog-actions"><button type="button" class="button button-quiet" id="cancel-button">Cancelar</button><button class="button button-primary" type="submit"><span id="submit-label">Salvar registro</span><span>→</span></button></div></form></dialog>
+  <script src="app.js"></script>
+</body>
 </html>
