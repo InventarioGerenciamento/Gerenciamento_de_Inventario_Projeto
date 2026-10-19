@@ -237,6 +237,11 @@ body {
   align-items: center;
   gap: 20px;
 }
+.install-app-button {
+  padding: 7px 10px;
+  gap: 6px;
+  white-space: nowrap;
+}
 .today {
   font-size: 10px;
   color: #9aa4b4;
@@ -798,6 +803,21 @@ dialog::backdrop {
 dialog form {
   padding: 23px;
 }
+.install-help {
+  padding: 23px;
+}
+.install-help h2 {
+  font: 700 20px Manrope;
+  margin: 5px 0 0;
+  letter-spacing: -0.5px;
+}
+.install-help ol {
+  padding-left: 20px;
+  margin: 0 0 20px;
+  color: #637087;
+  font-size: 11px;
+  line-height: 1.8;
+}
 .dialog-top {
   display: flex;
   justify-content: space-between;
@@ -924,6 +944,12 @@ dialog form {
   }
   .top-actions {
     gap: 10px;
+  }
+  .install-app-button {
+    padding: 7px;
+  }
+  .install-label {
+    display: none;
   }
   .content {
     padding: 25px 17px 30px;

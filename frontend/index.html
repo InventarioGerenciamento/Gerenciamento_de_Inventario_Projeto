@@ -4,7 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f8fc">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Senai estoque">
   <title>Senai estoque · Gestão de inventário</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,12 +32,13 @@
     <div class="sidebar-bottom"><div class="help-card"><span class="help-symbol">✳</span><strong>Precisa de ajuda?</strong><p>Consulte os guias de uso do inventário.</p><button id="help-btn">Ver guia <span>↗</span></button></div><div class="profile"><div class="avatar">MA</div><div class="profile-info"><strong>Mariana Alves</strong><small>Administradora</small></div><button class="profile-menu" aria-label="Opções do perfil">···</button></div></div>
   </aside>
   <main class="main-area">
-    <header class="topbar"><button class="mobile-menu" id="mobile-menu" aria-label="Abrir menu">☰</button><div class="breadcrumb"><span>Workspace</span><span class="crumb-sep">/</span><strong id="crumb-current">Visão geral</strong></div><div class="top-actions"><span class="today" id="today"></span><button class="icon-button notification" aria-label="Notificações">♧<i></i></button><div class="top-avatar">MA</div></div></header>
+    <header class="topbar"><button class="mobile-menu" id="mobile-menu" aria-label="Abrir menu">☰</button><div class="breadcrumb"><span>Workspace</span><span class="crumb-sep">/</span><strong id="crumb-current">Visão geral</strong></div><div class="top-actions"><span class="today" id="today"></span><button class="button button-quiet install-app-button" id="install-app" type="button" aria-label="Instalar aplicativo" hidden><span aria-hidden="true">⇩</span><span class="install-label">Instalar app</span></button><button class="icon-button notification" aria-label="Notificações">♧<i></i></button><div class="top-avatar">MA</div></div></header>
     <div class="content" id="content"></div>
     <footer class="footer"><span>Senai estoque <span class="footer-dot">•</span> Gestão simples, estoque organizado.</span><span>DEMONSTRAÇÃO INTERATIVA <span class="live-dot"></span></span></footer>
   </main>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <dialog id="record-dialog"><form id="record-form" method="dialog"><div class="dialog-top"><div><div class="eyebrow">NOVO REGISTRO</div><h2 id="dialog-title">Adicionar item</h2></div><button class="dialog-close" type="button" id="dialog-close" aria-label="Fechar">×</button></div><p class="dialog-description" id="dialog-description">Preencha os dados abaixo para continuar.</p><div class="form-fields" id="form-fields"></div><div class="dialog-actions"><button type="button" class="button button-quiet" id="cancel-button">Cancelar</button><button class="button button-primary" type="submit"><span id="submit-label">Salvar registro</span><span>→</span></button></div></form></dialog>
+  <dialog id="install-help-dialog"><div class="install-help"><div class="dialog-top"><div><div class="eyebrow">INSTALAR APLICATIVO</div><h2>Instale no seu dispositivo</h2></div><button class="dialog-close" type="button" id="install-help-close" aria-label="Fechar">×</button></div><p class="dialog-description">A instalação adiciona o app ao dispositivo; não baixa um arquivo APK.</p><ol><li><strong>Neste computador:</strong> abra o endereço no Chrome ou Edge, fora do navegador integrado do VS Code. Clique em “Instalar app” ou use o ícone de instalação na barra de endereços.</li><li><strong>Android:</strong> o site precisa estar publicado em um endereço HTTPS acessível pelo celular. No Chrome, abra o menu e escolha “Instalar app”.</li><li><strong>iPhone ou iPad:</strong> publique o site em HTTPS, abra-o no Safari, toque em “Compartilhar” e em “Adicionar à Tela de Início”.</li></ol><button class="button button-quiet" id="install-help-done" type="button">Entendi</button></div></dialog>
   <script src="app.js"></script>
 </body>
 </html>
