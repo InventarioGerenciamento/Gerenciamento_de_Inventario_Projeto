@@ -8,19 +8,15 @@ Aplicativo web em português, feito com PHP, HTML, CSS e JavaScript. A interface
 - `backend/`: API e roteador PHP, integração Supabase e configuração privada do servidor.
 - `backend/data/`: banco SQLite antigo, mantido como origem da migração inicial para o Supabase.
 
-## Configurar o banco Supabase
+## Configurar Supabase e acesso de usuários
 
-1. Crie um projeto no [Supabase](https://supabase.com/) ou abra o projeto existente.
-2. No **SQL Editor**, execute o conteúdo de [`backend/supabase-schema.sql`](backend/supabase-schema.sql). Ele cria as tabelas e as funções de leitura e gravação.
-3. No painel do projeto, copie a **Project URL** e uma chave secreta de servidor (`service_role` ou `sb_secret_`). **Nunca coloque essa chave no frontend nem a publique no GitHub.**
-4. Copie `backend/.env.example` para `backend/.env` e preencha os valores:
+1. No Supabase, crie as contas em **Authentication → Users → Add user**. O app não permite cadastro público.
+2. Em **Authentication → URL Configuration**, adicione o endereço do site às URLs permitidas. Para uso local, use `http://localhost:8000`.
+3. Copie a **Project URL**, a chave pública **anon/publishable** e a chave secreta de servidor (`service_role` ou `sb_secret_`). Só a chave pública é enviada à tela de login; a chave secreta fica no servidor.
+4. Copie `backend/.env.example` para `backend/.env` e preencha `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` e `SUPABASE_ALLOWED_EMAILS`. Informe na allowlist os e-mails autorizados, separados por vírgula.
+5. No **SQL Editor**, execute `backend/supabase-schema.sql`. Ele cria as tabelas e funções de leitura e gravação.
 
-   ```dotenv
-   SUPABASE_URL=https://seu-projeto.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY=sua_chave_secreta
-   ```
-
-   No PowerShell, a cópia pode ser feita com `Copy-Item backend\.env.example backend\.env`. Depois, abra `backend/.env` no VS Code para inserir a URL e chave reais. O arquivo `.env` está excluído do Git. Não envie nem compartilhe a chave secreta.
+A API valida cada sessão com Supabase Auth. Contas fora da allowlist são bloqueadas. A chave `service_role` ou `sb_secret_` nunca deve ser colocada no frontend nem publicada no GitHub. O arquivo `.env` está excluído do Git. Não compartilhe esse segredo.
 
 ## Executar localmente
 
@@ -34,7 +30,7 @@ Abra `http://localhost:8000`. A API PHP usa a chave apenas no servidor e comunic
 
 Na primeira leitura, o sistema transfere os dados atuais do SQLite local para o Supabase, se o Supabase ainda estiver sem inventário. Depois disso, o Supabase passa a ser a fonte dos dados.
 
-O endpoint da API não tem autenticação de usuários. Enquanto não houver login, use-o apenas localmente ou em um ambiente controlado; não publique na internet com dados reais.
+As contas autenticadas e listadas em `SUPABASE_ALLOWED_EMAILS` podem ler e alterar os cadastros do inventário. A tela “Usuários” continua sendo um cadastro interno; ela não cria contas nem altera a allowlist.
 
 ## Instalar como aplicativo
 

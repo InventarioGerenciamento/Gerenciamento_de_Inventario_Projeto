@@ -16,6 +16,23 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <section class="auth-screen" id="auth-screen">
+    <div class="auth-card">
+      <a class="brand auth-brand" href="./" aria-label="Senai estoque"><span class="brand-mark">S</span><span>Senai estoque<span class="brand-dot">.</span><small>GESTÃO DE INVENTÁRIO</small></span></a>
+      <div class="eyebrow">ACESSO AO INVENTÁRIO</div>
+      <h1>Entre na sua conta</h1>
+      <p class="auth-description">Use o e-mail autorizado para acessar os dados do estoque.</p>
+      <form id="login-form" class="auth-form">
+        <label for="login-email">E-mail</label>
+        <input id="login-email" name="email" type="email" autocomplete="username" required placeholder="voce@empresa.com.br">
+        <label for="login-password">Senha</label>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="Sua senha">
+        <p class="auth-feedback" id="auth-feedback" role="status" aria-live="polite"></p>
+        <button class="button button-primary auth-submit" id="login-submit" type="submit">Entrar</button>
+      </form>
+      <p class="auth-footnote">A conta precisa ser criada no Supabase e incluída na lista de e-mails autorizados do servidor.</p>
+    </div>
+  </section>
   <aside class="sidebar" id="sidebar">
     <a class="brand" href="#inicio" aria-label="Senai estoque início"><span class="brand-mark">S</span><span>Senai estoque<span class="brand-dot">.</span><small>GESTÃO DE INVENTÁRIO</small></span></a>
     <div class="workspace-label">ESPAÇO DE TRABALHO</div>
@@ -29,10 +46,10 @@
       <div class="nav-group-label">ADMINISTRAÇÃO</div>
       <button class="nav-item" data-page="usuarios"><span class="nav-icon">♙</span>Usuários</button>
     </nav>
-    <div class="sidebar-bottom"><div class="help-card"><span class="help-symbol">✳</span><strong>Precisa de ajuda?</strong><p>Consulte os guias de uso do inventário.</p><button id="help-btn">Ver guia <span>↗</span></button></div><div class="profile"><div class="avatar">MA</div><div class="profile-info"><strong>Mariana Alves</strong><small>Administradora</small></div><button class="profile-menu" aria-label="Opções do perfil">···</button></div></div>
+    <div class="sidebar-bottom"><div class="help-card"><span class="help-symbol">✳</span><strong>Precisa de ajuda?</strong><p>Consulte os guias de uso do inventário.</p><button id="help-btn">Ver guia <span>↗</span></button></div><div class="profile"><div class="avatar" id="profile-avatar">US</div><div class="profile-info"><strong id="signed-in-email">Conta autenticada</strong><small>Acesso autorizado</small></div><button class="profile-menu" id="logout-btn" aria-label="Sair da conta" title="Sair">↪</button></div></div>
   </aside>
   <main class="main-area">
-    <header class="topbar"><button class="mobile-menu" id="mobile-menu" aria-label="Abrir menu">☰</button><div class="breadcrumb"><span>Workspace</span><span class="crumb-sep">/</span><strong id="crumb-current">Visão geral</strong></div><div class="top-actions"><span class="today" id="today"></span><button class="button button-quiet install-app-button" id="install-app" type="button" aria-label="Instalar aplicativo" hidden><span aria-hidden="true">⇩</span><span class="install-label">Instalar app</span></button><button class="icon-button notification" aria-label="Notificações">♧<i></i></button><div class="top-avatar">MA</div></div></header>
+    <header class="topbar"><button class="mobile-menu" id="mobile-menu" aria-label="Abrir menu">☰</button><div class="breadcrumb"><span>Workspace</span><span class="crumb-sep">/</span><strong id="crumb-current">Visão geral</strong></div><div class="top-actions"><span class="today" id="today"></span><button class="button button-quiet install-app-button" id="install-app" type="button" aria-label="Instalar aplicativo" hidden><span aria-hidden="true">⇩</span><span class="install-label">Instalar app</span></button><button class="icon-button notification" aria-label="Notificações">♧<i></i></button><div class="top-avatar" id="top-avatar">US</div></div></header>
     <div class="content" id="content"></div>
     <footer class="footer"><span>Senai estoque <span class="footer-dot">•</span> Gestão simples, estoque organizado.</span><span>DEMONSTRAÇÃO INTERATIVA <span class="live-dot"></span></span></footer>
   </main>

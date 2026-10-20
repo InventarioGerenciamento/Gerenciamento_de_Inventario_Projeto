@@ -1,4 +1,4 @@
-const CACHE_NAME = "senai-estoque-v4";
+const CACHE_NAME = "senai-estoque-v6";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -42,7 +42,7 @@ self.addEventListener("fetch", (event) => {
   if (
     event.request.method !== "GET" ||
     requestUrl.origin !== self.location.origin ||
-    requestUrl.pathname.endsWith("/api")
+    /\/api(?:\/|$)/.test(requestUrl.pathname)
   ) {
     return;
   }

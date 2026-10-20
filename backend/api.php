@@ -23,23 +23,72 @@ function supabase_credentials(): array
             }
             $name = trim(substr($line, 0, $separator));
             $value = trim(substr($line, $separator + 1));
-            if (in_array($name, ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'], true) && getenv($name) === false) {
+            if (in_array($name, ['SUPABASE_URL', 'SUPABASE_PUBLISHABLE_KEY', 'SUPABASE_ANON_KEY', 'SUPABASE_SECRET_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_ALLOWED_EMAILS'], true) && getenv($name) === false) {
                 putenv($name . '=' . trim($value, " \t\n\r\0\x0B\"'"));
             }
         }
     }
 
     $url = rtrim((string)getenv('SUPABASE_URL'), '/');
-    $key = (string)getenv('SUPABASE_SERVICE_ROLE_KEY');
-    if ($url === '' || $key === '') {
-        throw new RuntimeException('Configure SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no arquivo backend/.env antes de iniciar o sistema.');
+    $key = (string)(getenv('SUPABASE_SECRET_KEY') ?: getenv('SUPABASE_SERVICE_ROLE_KEY'));
+    $anonKey = (string)(getenv('SUPABASE_PUBLISHABLE_KEY') ?: getenv('SUPABASE_ANON_KEY'));
+    $allowedEmails = (string)getenv('SUPABASE_ALLOWED_EMAILS');
+    if ($url === '' || $key === '' || $anonKey === '') {
+        throw new RuntimeException('Configure SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY e SUPABASE_SECRET_KEY em backend/.env.');
     }
     if (filter_var($url, FILTER_VALIDATE_URL) === false || strtolower((string)parse_url($url, PHP_URL_SCHEME)) !== 'https') {
         throw new RuntimeException('SUPABASE_URL precisa ser a URL HTTPS do projeto Supabase.');
     }
 
-    return [$url, $key];
+    return [$url, $key, $anonKey, $allowedEmails];
 }
+
+function authenticated_user(): array
+{
+    $authorization = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+    if (preg_match('/^Bearer\\s+(.+)$/i', trim($authorization), $matches) !== 1) {
+        throw new UnauthorizedException('Entre com sua conta para continuar.');
+    }
+    [$url, , $anonKey, $allowedEmails] = supabase_credentials();
+    $allowed = array_values(array_filter(array_map(static fn (string $email): string => strtolower(trim($email)), explode(',', $allowedEmails))));
+    if ($allowed === []) {
+        throw new RuntimeException('Configure SUPABASE_ALLOWED_EMAILS com os e-mails autorizados em backend/.env.');
+    }
+    $context = stream_context_create(['http' => [
+        'method' => 'GET',
+        'header' => "apikey: " . $anonKey . "\r\nAuthorization: Bearer " . $matches[1] . "\r\nAccept: application/json",
+        'ignore_errors' => true,
+        'timeout' => 10,
+    ]]);
+    set_error_handler(static fn (): bool => true, E_WARNING);
+    try {
+        $response = file_get_contents($url . '/auth/v1/user', false, $context);
+    } finally {
+        restore_error_handler();
+    }
+    $status = 0;
+    foreach ($http_response_header ?? [] as $header) {
+        if (preg_match('/^HTTP\\/\\S+\\s+(\\d{3})/', $header, $statusMatch) === 1) {
+            $status = (int)$statusMatch[1];
+        }
+    }
+    if ($status === 401 || $status === 403) {
+        throw new UnauthorizedException('Sua sessão expirou ou não é válida. Entre novamente.');
+    }
+    if ($response === false || $status !== 200) {
+        throw new RuntimeException('Não foi possível validar sua sessão no Supabase Auth. Tente novamente.');
+    }
+    $user = json_decode($response, true);
+    if (!is_array($user) || !is_string($user['email'] ?? null)) {
+        throw new UnauthorizedException('O Supabase não retornou uma conta válida.');
+    }
+    if (!in_array(strtolower($user['email']), $allowed, true)) {
+        throw new UnauthorizedException('Sua conta não está autorizada a acessar o inventário.');
+    }
+    return $user;
+}
+
+final class UnauthorizedException extends RuntimeException {}
 
 function supabase_request(string $endpoint, string $method = 'GET', ?array $payload = null): array|null
 {
@@ -47,8 +96,10 @@ function supabase_request(string $endpoint, string $method = 'GET', ?array $payl
     $headers = [
         'Accept: application/json',
         'apikey: ' . $key,
-        'Authorization: Bearer ' . $key,
     ];
+    if (!str_starts_with($key, 'sb_secret_')) {
+        $headers[] = 'Authorization: Bearer ' . $key;
+    }
     $options = [
         'method' => $method,
         'header' => implode("\r\n", $headers),
@@ -132,8 +183,19 @@ function load_supabase_data(): array
     return $result['dados'];
 }
 
-function validate_data(array $payload): void
+function validate_data(array &$payload): void
 {
+    $products = is_array($payload['produtos'] ?? null) ? $payload['produtos'] : [];
+    foreach ((is_array($payload['categorias'] ?? null) ? $payload['categorias'] : []) as $index => $category) {
+        if (is_array($category)) {
+            $payload['categorias'][$index]['produtos'] = (string)count(array_filter($products, static fn ($product): bool => is_array($product) && ($product['categoria'] ?? null) === ($category['nome'] ?? null)));
+        }
+    }
+    foreach ((is_array($payload['locais'] ?? null) ? $payload['locais'] : []) as $index => $location) {
+        if (is_array($location)) {
+            $payload['locais'][$index]['itens'] = (string)count(array_filter($products, static fn ($product): bool => is_array($product) && ($product['local'] ?? null) === ($location['nome'] ?? null)));
+        }
+    }
     $expected = table_fields();
     if (array_diff(array_keys($expected), array_keys($payload)) !== []) {
         throw new InvalidArgumentException('Dados de inventário inválidos.');
@@ -306,10 +368,28 @@ function save_data(PDO $pdo, array $payload): void
     }
 }
 
-if (isset($_GET['api']) || parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) === '/api') {
+if (isset($_GET['api']) || in_array(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), ['/api', '/api/config'], true)) {
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
     $method = $_SERVER['REQUEST_METHOD'];
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+
+    if ($path === '/api/config') {
+        if ($method !== 'GET') {
+            http_response_code(405);
+            header('Allow: GET');
+            echo json_encode(['error' => 'Método não permitido.']);
+            exit;
+        }
+        try {
+            [$url, , $anonKey] = supabase_credentials();
+            echo json_encode(['url' => $url, 'anonKey' => $anonKey], JSON_UNESCAPED_SLASHES);
+        } catch (RuntimeException $error) {
+            http_response_code(500);
+            echo json_encode(['error' => $error->getMessage()], JSON_UNESCAPED_UNICODE);
+        }
+        exit;
+    }
 
     if (!in_array($method, ['GET', 'POST'], true)) {
         http_response_code(405);
@@ -319,6 +399,7 @@ if (isset($_GET['api']) || parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH
     }
 
     try {
+        authenticated_user();
         if ($method === 'GET') {
             echo json_encode(load_supabase_data(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             exit;
@@ -331,6 +412,10 @@ if (isset($_GET['api']) || parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH
         validate_data($payload);
         supabase_request('rpc/salvar_inventario', 'POST', ['dados' => $payload]);
         echo json_encode(['saved' => true]);
+        exit;
+    } catch (UnauthorizedException $error) {
+        http_response_code(401);
+        echo json_encode(['error' => $error->getMessage()], JSON_UNESCAPED_UNICODE);
         exit;
     } catch (InvalidArgumentException $error) {
         http_response_code(400);
